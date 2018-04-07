@@ -2,3 +2,4 @@
 ckan_url=http://localhost:5000
 api_key=
 resource_id=
+directory_zakazky=
