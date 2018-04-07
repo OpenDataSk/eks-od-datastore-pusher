@@ -28,7 +28,7 @@ USAGE = '''
 
 #PAST_DAY_DATA_URL = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson'
 #PAST_HOUR_DATA_URL = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson'
-BATCH_SIZE = 100
+BATCH_SIZE = 1000
 STATE_FILE = 'datastore_updater.state'
 
 # state keys
