@@ -531,8 +531,10 @@ def update(config):
                 records = []
 
 
-    # upsert the remainer of records
+    # upsert the remainer of records, mark state
     upsert(ckan_url, resource_id, api_key, records)
+    state[STATE_LAST_PROCESSED] = last_processed
+    save_state()
 
     print('DataStore resource successfully updated with %d records.' % counter)
 
