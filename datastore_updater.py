@@ -1,5 +1,5 @@
 import sys
-import ConfigParser
+import configparser
 import json
 import datetime
 
@@ -24,12 +24,12 @@ usage = '''
 
 '''
 
-PAST_DAY_DATA_URL = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson'
-PAST_HOUR_DATA_URL = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson'
+#PAST_DAY_DATA_URL = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson'
+#PAST_HOUR_DATA_URL = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson'
 
 
 def exit(msg=usage):
-    print msg
+    print(msg)
     sys.exit(1)
 
 
@@ -55,13 +55,14 @@ def setup(config):
     # Create a dataset first
 
     data = {
-        'name': 'ngds-earthquakes-data',
-        'title': 'NGDS Earthquakes Data',
+        'name': 'eks-zakazky-datapusher-test',
+        'title': 'EKS - Zakázky - datapusher test ',
         'notes': '''
-            Earthquake data from http://earthquake.usgs.gov,
-            updated regularly and pushed to a DataStore table.
+Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during development and testing. Thus:
 
-The script that handles the update can be accessed at https://github.com/ckan/example-earthquake-datastore.
+- it may contain bogus data
+- data may vanish without warning
+- BEWARE OF DRAGONS
         ''',
     }
 
@@ -76,6 +77,8 @@ The script that handles the update can be accessed at https://github.com/ckan/ex
     dataset_id = response.json()['result']['id']
 
     # Get a first dump of the Earthquake data for the past day
+    # XXX
+    return
 
     past_day_earthquake_data = requests.get(PAST_DAY_DATA_URL).json()
     records = _get_records(past_day_earthquake_data)
@@ -133,12 +136,12 @@ The script that handles the update can be accessed at https://github.com/ckan/ex
 
     resource_id = response.json()['result']['resource_id']
 
-    print '''
+    print('''
 Dataset and DataStore resource successfully created with {0} records.
 Please add the resource id to your ini file:
 
 resource_id={1}
-          '''.format(len(records), resource_id)
+          '''.format(len(records), resource_id))
 
 
 def update(config):
@@ -187,7 +190,7 @@ if __name__ == '__main__':
     if action not in ('setup', 'update',):
         exit()
 
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.SafeConfigParser()
     config.read('config.ini')
     for key in ('ckan_url', 'api_key',):
         if not config.get('main', key):
