@@ -492,6 +492,10 @@ resource_id={1}
         INT_ITEM_NAMES = ['PocetNotifikovanychDodavatelov', 'PocetSutaziacich',
             'PocetPredlozenychPonuk', 'TrvanieAukcie_Minut', 'PredlzovanieAukcie_Minut']
 
+        # some other hacks:
+        # - some EKS items aer too big, triggering "csv.Error: field larger than field limit"
+        csv.field_size_limit(262144)
+
         # records to be inserted
         records = []
 
