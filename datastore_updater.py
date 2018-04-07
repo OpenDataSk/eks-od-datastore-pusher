@@ -402,13 +402,13 @@ resource_id={1}
     @staticmethod
     def next_csvdate(csvdate):
         """Determine next CSV date.
-        
+
         Here, we simpe do "+1 month", assuming we do not have gaps in our
         CSV copy and if file is not founf, then "we went too far into
         future, no file available yet".
-        
+
         Example:
-        
+
             '2018-3' -> '2018-4'
         """
 
@@ -507,7 +507,7 @@ resource_id={1}
         Basic update operation for one month (i.e. one CSV file).
 
         csvdate: portion of CSV file name with year andf month (e.g. '2018-3')
-        
+
         Returns:
         - True: file processed (and we may attempt file for next month)
         - False: file not found (and thus it looks like we're done)
@@ -601,7 +601,7 @@ resource_id={1}
         # updates, re-process again items/line maybe needlessly (but such
         # waste is considered OK while it helps avoid more code)
         # 2) if it is "last month": we weill process it "for the last time",
-        # picking up latest updates and then proceed to the next (i.e. 
+        # picking up latest updates and then proceed to the next (i.e.
         # current) month
         counter = 0
         while self.update_month(month_to_process):
@@ -610,7 +610,7 @@ resource_id={1}
             month_to_process = self.next_csvdate(month_to_process)
 
         print('%d files processed.' % counter)
-        
+
         return
 
 
