@@ -219,20 +219,6 @@ def exit(msg=USAGE):
     sys.exit(1)
 
 
-def _get_records(earthquake_data):
-    records = []
-    if len(earthquake_data['features']):
-        for feature in earthquake_data['features']:
-            record = feature['properties']
-            record.update({
-                'longitude': feature['geometry']['coordinates'][0],
-                'latitude': feature['geometry']['coordinates'][1],
-                'added': datetime.datetime.now().isoformat(),
-            })
-            records.append(record)
-    return records
-
-
 def setup(config):
 
     ckan_url = config.get('main', 'ckan_url').rstrip('/')
