@@ -28,6 +28,7 @@ USAGE = '''
 
 #PAST_DAY_DATA_URL = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson'
 #PAST_HOUR_DATA_URL = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson'
+BATCH_SIZE = 10
 STATE_FILE = 'datastore_updater.state'
 
 # state keys
@@ -434,6 +435,34 @@ def convert_float(eks_float):
     return float(eks_float.replace(',', '.'))
 
 
+def upsert(ckan_url, resource_id, api_key, records):
+    """Upsert given records into data store."""
+
+    if len(records) == 0:
+        return
+
+    # Push the records to the DataStore table
+    data = {
+        'resource_id': resource_id,
+        'method': 'upsert',
+        'records': records,
+    }
+    print(records)
+
+    response = requests.post('{0}/api/action/datastore_upsert'.format(ckan_url),
+                             data=json.dumps(data),
+                             headers={'Content-type': 'application/json',
+                                      'Authorization': api_key},
+                             # FIXME: security vulnerability => move this to confing.ini so that those using self-signed certs can get stuff woring but those with good certs can by default be safe!!!
+                             # (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
+                             verify=False)
+
+    if response.status_code != 200:
+        exit('Error: {0}'.format(response.content))
+
+    print('XXX pushed %d items in a batch' % len(records))
+
+
 def update(config):
 
     ckan_url = config.get('main', 'ckan_url').rstrip('/')
@@ -506,30 +535,15 @@ def update(config):
             # can properly create "created" and "modified" timestamps
 
             records.append(rowjson)
+            
+            # batching, to avoid pushing too much in one call
+            if len(records) >= BATCH_SIZE:
+                upsert(ckan_url, resource_id, api_key, records)
+                records = []
 
-    # TODO: implement batching, to avoid pushing too much in one go; say we'll push 1k items per call
-    if len(records) == 0:
-        # No new records
-        return
 
-    # Push the records to the DataStore table
-    data = {
-        'resource_id': resource_id,
-        'method': 'upsert',
-        'records': records,
-    }
-    print(records)
-
-    response = requests.post('{0}/api/action/datastore_upsert'.format(ckan_url),
-                             data=json.dumps(data),
-                             headers={'Content-type': 'application/json',
-                                      'Authorization': api_key},
-                             # FIXME: security vulnerability => move this to confing.ini so that those using self-signed certs can get stuff woring but those with good certs can by default be safe!!!
-                             # (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
-                             verify=False)
-
-    if response.status_code != 200:
-        exit('Error: {0}'.format(response.content))
+    # upsert the remainer of records
+    upsert(ckan_url, resource_id, api_key, records)
 
     print('DataStore resource successfully updated with %d records.' % counter)
 
