@@ -369,7 +369,7 @@ resource_id={1}
         '''.format(len(records), resource_id))
 
 
-    def find_oldest_csv(self):
+    def find_oldest_csvdate(self):
         """Find oldest CSV file in the given directory.
 
         "Oldest" does not mean selection based on file modification time but instead
@@ -380,10 +380,41 @@ resource_id={1}
             ZoznamZakaziekReport_2018-3_.csv
             ZoznamZakaziekReport_2018-4_.csv
 
-        So here, '2018-3' would be returned."""
+        So here, '2018-3' (a.k.a. "CVS date") would be returned."""
 
-        # XXX TODO
-        return '2018-3'
+        # list the self.directory_zakazky, skip directories, parse out
+        # available dates (YYYY-M) from file names
+        file_dates = []
+        print(os.listdir(self.directory_zakazky))
+        for diritem in os.listdir(self.directory_zakazky):
+            if not os.path.isfile(os.path.join(self.directory_zakazky, diritem)):
+                continue
+            try:
+                zdate = datetime.datetime.strptime(diritem, 'ZoznamZakaziekReport_%Y-%m_.csv')
+                file_dates.append(zdate)
+            except ValueError:
+                print("debug: file %s does not match, skipping" % diritem)
+
+        file_dates.sort()
+        return '{d.year}-{d.month}'.format(d = file_dates[0])
+
+
+    @staticmethod
+    def next_csvdate(csvdate):
+        """Determine next CSV date.
+        
+        Here, we simpe do "+1 month", assuming we do not have gaps in our
+        CSV copy and if file is not founf, then "we went too far into
+        future, no file available yet".
+        
+        Example:
+        
+            '2018-3' -> '2018-4'
+        """
+
+        zdate = datetime.datetime.strptime(csvdate, '%Y-%m')
+        ztimedelta = datetime.timedelta(days=31)
+        return '{d.year}-{d.month}'.format(d = (zdate + ztimedelta))
 
 
     @staticmethod
@@ -471,30 +502,37 @@ resource_id={1}
         print('debug: pushed %d items in a batch' % len(records))
 
 
-    def update(self):
-        """Basic update operation called from command line."""
+    def update_month(self, csvdate):
+        """
+        Basic update operation for one month (i.e. one CSV file).
 
-        # prepare mapping from structure
+        csvdate: portion of CSV file name with year andf month (e.g. '2018-3')
+        
+        Returns:
+        - True: file processed (and we may attempt file for next month)
+        - False: file not found (and thus it looks like we're done)
+        """
+
+        # prepare mapping from structure and some helpers
+        # TODO: This is "static", i.e.  move it somewhere so that it runs
+        # only once, not "once for each CSV file".
         mapping = {}
         for item in ZAZKAZKY_STRUCTURE:
             mapping[item['id']] = item['csvindex']
-
-        # records to be inserted, and other "helpers"
-        records = []
         DATE_ITEM_NAMES = ['DatumVyhlasenia', 'DatumZazmluvnenia', 'LehotaPlneniaOd',
             'LehotaPlneniaDo', 'LehotaPlneniaPresne', 'LehotaNaPredkladaniePonuk',
             'ZaciatokAukcie']
         FLOAT_ITEM_NAMES = ['MnozstvoHodnota', 'MaximalnaVyskaZdrojov', 'VstupnaCena']
 
-        # Load "state" (YYYY-M of last processed file); if not then
-        last_processed = None
-        if STATE_LAST_PROCESSED in self.state:
-            last_processed = self.state[STATE_LAST_PROCESSED]
-        if last_processed is None:
-            last_processed = self.find_oldest_csv()
+        # records to be inserted
+        records = []
 
         # Load the CSV file
-        csvfn = '%s/ZoznamZakaziekReport_%s_.csv' % (self.directory_zakazky, last_processed)
+        csvfn = '%s/ZoznamZakaziekReport_%s_.csv' % (self.directory_zakazky, csvdate)
+        if not os.path.exists(csvfn):
+            print("file %s not available, it looks like we are done" % csvfn)
+            return False
+
         with open(csvfn, 'r') as csvfile:
             print("loading %s ..." % csvfn)
             itemreader = csv.reader(csvfile)
@@ -540,14 +578,39 @@ resource_id={1}
 
         # upsert the remainer of records, mark state
         self.upsert(records)
-        self.state[STATE_LAST_PROCESSED] = last_processed
+        self.state[STATE_LAST_PROCESSED] = csvdate
         self.save_state()
 
         print('DataStore resource successfully updated with %d records.' % counter)
 
-        # Store YYYYMM of processed CSV in state file, save it
-        # add "+1 month" and if file for that exists go to "Load the CSV file"
+        return True
 
+
+    def update(self):
+        """Basic update operation called from command line."""
+
+        # Load "state" (YYYY-M of last processed file); if not then
+        month_to_process = None
+        if STATE_LAST_PROCESSED in self.state:
+            month_to_process = self.state[STATE_LAST_PROCESSED]
+        if month_to_process is None:
+            month_to_process = self.find_oldest_csvdate()
+
+        # process "last processed" month assuming:
+        # 1) if it also still "current month": we will process all, pick
+        # updates, re-process again items/line maybe needlessly (but such
+        # waste is considered OK while it helps avoid more code)
+        # 2) if it is "last month": we weill process it "for the last time",
+        # picking up latest updates and then proceed to the next (i.e. 
+        # current) month
+        counter = 0
+        while self.update_month(month_to_process):
+            counter += 1
+            # OK, get the name for "next month" and try it ...
+            month_to_process = self.next_csvdate(month_to_process)
+
+        print('%d files processed.' % counter)
+        
         return
 
 
