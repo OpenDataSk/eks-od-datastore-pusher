@@ -492,6 +492,16 @@ def update(config):
             for mitem in FLOAT_ITEM_NAMES:
                 rowjson[mitem] = convert_float(row[mapping[mitem]])
 
+            # TODO: add duplicate detection: For example
+            # ZoznamZakaziekReport_2018-3_.csv contains 'Z20187264' at least
+            # three time.  We push all accurences to 'records' here but
+            # DataStore (based on IdentifikatorZakazky labeled as 'id' and
+            # with 'upsert') overwrites first occurence with seconds, etc.
+            # so at the end only last item gets actually stored.
+            # It not clear what to do with that but at least we should
+            # detect duplicates and reports their line numbers in a
+            # dedicated "problems" column?
+
             # TODO: use the ID to obtain the row also from CKAN, so that we
             # can properly create "created" and "modified" timestamps
 
