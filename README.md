@@ -16,18 +16,21 @@ TODO
 
 ## Usage
 
-* Create a virtualenv and install [requests](http://docs.python-requests.org/):
-
-        virtualenv pyenv
-        cd pyenv && source bin/activate
-        pip install requests
-
 * Clone this repository:
 
-        mkdir src && cd src
-        git clone https://github.com/ckan/example-earthquake-datastore.git
+        git clone https://github.com/OpenDataSk/eks-od-datastore-pusher.git
+        cd eks-od-datastore-pusher
 
-* Define your CKAN URL and API key in the `config.ini` file.
+* Create a virtualenv and install dependencies:
+
+        virtualenv .env
+        source .env/bin/activate
+        pip install -r requirements.txt
+
+* Define your CKAN URL and API key in the `config.ini` file:
+
+	cp config.ini.template config.ini
+	...
 
 * Run the setup command, and write the resulting resource id in your `config.ini` file:
 
@@ -43,7 +46,7 @@ You probably want to set up this command to run hourly, eg with a cron job:
 
 Add a line like this:
 
-    0 0 * * * /path/to/your/pyenv/bin/python /path/to/your/pyenv/src/example-earthquake-datastore/datastore_updater.py update
+    0 0 * * * /path/to/your/pyenv/bin/python /path/to/your/workspace/eks-od-datastore-pusher/datastore_updater.py update
 
 # TODO
 
