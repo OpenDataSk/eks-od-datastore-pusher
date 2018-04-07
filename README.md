@@ -52,7 +52,15 @@ Add a line like this:
 
     0 0 * * * /path/to/your/pyenv/bin/python /path/to/your/workspace/eks-od-datastore-pusher/datastore_updater.py update
 
-# TODO
+## License
+
+This code is BSD licensed, see [LICENSE].
+
+## Contribution
+
+Simply send a pull request or report an issue. Thank you in advance.
+
+## TODO
 
 - add license (for now BSD preffered)
 - detect duplicates (those do occur in EKS data, we can't put them into DataStore, we should initially at least report that)
