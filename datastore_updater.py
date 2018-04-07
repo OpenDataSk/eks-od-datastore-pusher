@@ -244,14 +244,14 @@ class EksZakazkyDatastoreUpdater:
 
         # Create a dataset first
         data = {
-            'name': 'eks-zakazky-datapusher-test5',
+            'name': 'eks-zakazky-datapusher-test6',
             'title': 'EKS - Zakázky - datapusher test',
             'owner_org': 'opendata_sk',	# TODO: take that from config.ini
             'notes': '''
-Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during development and testing. Thus:
-
-- it may contain bogus data
-- data may vanish without warning
+Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during development and testing. Thus:\n
+\n
+- it may contain bogus data\n
+- data may vanish without warning\n
 - BEWARE OF DRAGONS
             ''',
         }
@@ -474,6 +474,19 @@ resource_id={1}
         return float(eks_float.replace(',', '.'))
 
 
+    @staticmethod
+    def convert_int(eks_int):
+        """We're getting "strings" from CSV, so strip quotes to get int
+        suitable for JSON, e.g.:
+            '504' -> 504
+        """
+
+        if len(eks_int) <= 0:
+            return None
+
+        return eks_int.strip("'")
+
+
     def upsert(self, records):
         """Upsert given records into data store."""
 
@@ -523,6 +536,8 @@ resource_id={1}
             'LehotaPlneniaDo', 'LehotaPlneniaPresne', 'LehotaNaPredkladaniePonuk',
             'ZaciatokAukcie']
         FLOAT_ITEM_NAMES = ['MnozstvoHodnota', 'MaximalnaVyskaZdrojov', 'VstupnaCena']
+        INT_ITEM_NAMES = ['PocetNotifikovanychDodavatelov', 'PocetSutaziacich',
+            'PocetPredlozenychPonuk', 'TrvanieAukcie_Minut', 'PredlzovanieAukcie_Minut']
 
         # records to be inserted
         records = []
@@ -554,6 +569,8 @@ resource_id={1}
                     rowjson[mitem] = self.convert_date(row[mapping[mitem]])
                 for mitem in FLOAT_ITEM_NAMES:
                     rowjson[mitem] = self.convert_float(row[mapping[mitem]])
+                for mitem in INT_ITEM_NAMES:
+                    rowjson[mitem] = self.convert_int(row[mapping[mitem]])
 
                 # TODO: add duplicate detection: For example
                 # ZoznamZakaziekReport_2018-3_.csv contains 'Z20187264' at least
