@@ -1,19 +1,18 @@
-example-earthquake-datastore
-============================
+eks-od-datastore-pusher
+=======================
 
-**Note**: Requires [requests](http://docs.python-requests.org/).
+This scripts takes individual CSV files harvested from portal.eks.sk (EKS)
+(with [eks-od-harvestrer](https://github.com/OpenDataSk/eks-od-harvestrer))
+and uploads them into single resource in CKAN. Intended side-effects of that
+are:
 
-An example script that sets up and periodically updates a
-[CKAN DataStore](http://docs.ckan.org/en/latest/datastore.html) table
-with [earthquake data](http://earthquake.usgs.gov) from the NGDS.
+- merging of the individual files into one big table
+- calculation of "last modified" timestamps, since EKS is not providing
+  those
 
-This example demonstrates how to use DataStore tables to push data directly
-to them rather than automatically import tabular files via the DataPusher.
-It can be easily be adapted to different data sources.
+# Basic information
 
-See it in action at http://demo.ckan.org/dataset/ngds-earthquakes-data
-
-![map](http://i.imgur.com/RDYNMJ3.jpg)
+TODO
 
 ## Usage
 
@@ -46,6 +45,27 @@ Add a line like this:
 
     0 0 * * * /path/to/your/pyenv/bin/python /path/to/your/pyenv/src/example-earthquake-datastore/datastore_updater.py update
 
+# TODO
+
+- finish initial basic feature(s)
+- add license (for now BSD preffered)
+- review this README and adjust all the stuff copied from ckan/example-earthquake-datastore which does not fit the fork
+- ...
+
+# Detailed technical stuff
+
+**Note**: Requires [requests](http://docs.python-requests.org/).
+
+An example script that sets up and periodically updates a
+[CKAN DataStore](http://docs.ckan.org/en/latest/datastore.html) table
+with [earthquake data](http://earthquake.usgs.gov) from the NGDS.
+
+This example demonstrates how to use DataStore tables to push data directly
+to them rather than automatically import tabular files via the DataPusher.
+It can be easily be adapted to different data sources.
+
+See it in action at http://demo.ckan.org/dataset/ngds-earthquakes-data
+
 ## How it works
 
 When running the `setup` command we are doing the following things:
@@ -62,6 +82,3 @@ Once we have this initial setup we can use the `update` command to periodically 
 As we defined a primary key when creating the DataStore table we can use the `upsert` method, which will update existing records and insert any new ones.
 
 When accessed via the CKAN frontend, the data can be explored in the grid and map previews powered by Recline, and of course it can be accessed programmatically from other applications using the [datastore_search](http://docs.ckan.org/en/latest/maintaining/datastore.html#ckanext.datastore.logic.action.datastore_search) API action.
-
-
-![grid](http://i.imgur.com/qR0i8dm.jpg)
