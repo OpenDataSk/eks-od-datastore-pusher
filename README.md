@@ -53,6 +53,7 @@ Add a line like this:
 - finish initial basic feature(s)
 - add license (for now BSD preffered)
 - review this README and adjust all the stuff copied from ckan/example-earthquake-datastore which does not fit the fork
+- user loggers (instead of print), set log level via config.ini
 - ...
 
 # Detailed technical stuff
