@@ -244,23 +244,23 @@ class EksZakazkyDatastoreUpdater:
 
         # Create a dataset first
         data = {
-            'name': 'eks-zakazky-datapusher-test6',
-            'title': 'EKS - Zakázky - datapusher test',
+            'name': 'eks-zakazky-datapusher-test8',
+            'title': 'EKS - Zakázky - datapusher test (alpha)',
             'owner_org': 'opendata_sk',	# TODO: take that from config.ini
             'notes': '''
-Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during development and testing. Thus:\n
-\n
-- it may contain bogus data\n
-- data may vanish without warning\n
+Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during development and testing. Thus:
+
+- it may contain bogus data
+- data may vanish without warning
 - BEWARE OF DRAGONS
             ''',
         }
 
         response = requests.post(
-            '{0}/api/action/package_create'.format(ckan_url),
+            '{0}/api/action/package_create'.format(self.ckan_url),
             data=json.dumps(data),
             headers={'Content-type': 'application/json',
-                     'Authorization': api_key},
+                     'Authorization': self.api_key},
             # FIXME: security vulnerability => move this to confing.ini so that those using self-signed certs can get stuff woring but those with good certs can by default be safe!!!
             # (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
             verify=False)
@@ -270,65 +270,18 @@ Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during developm
 
         dataset_id = response.json()['result']['id']
 
-        # Then create a resource, for now empty
+        # Then create a resource, empty at the beginning
         records = []
 
         # Manually set the field types to ensure they are handled properly
         # TODO: Those fileds are for "Zakazky". Later we will enhance that also for other EKS sets (Zmluvy, ...)
-        # TODO: derive that from ZAZKAZKY_STRUCTURE!!!
-        fields = [
-            {'id': 'IdentifikatorZakazky', 'type': 'text'},
-            {'id': 'ZakazkaUrl', 'type': 'text'},
-            {'id': 'StavZakazky', 'type': 'text'},
-            {'id': 'PouzityPostup', 'type': 'text'},
-            {'id': 'ObjednavatelDruh', 'type': 'text'},
-            {'id': 'ObjednavatelObchodneMeno', 'type': 'text'},
-            {'id': 'ObjednavatelICO', 'type': 'text'},
-            {'id': 'ObjednavatelStat', 'type': 'text'},
-            {'id': 'ObjednavatelObec', 'type': 'text'},
-            {'id': 'ObjednavatelPSC', 'type': 'text'},
-            {'id': 'ObjednavatelUlica', 'type': 'text'},
-            {'id': 'DatumVyhlasenia', 'type': 'timestamp'},
-            {'id': 'DatumZazmluvnenia', 'type': 'timestamp'},
-            {'id': 'OpisnyFormularNazov', 'type': 'text'},
-            {'id': 'OpisnyFormularKlucoveSlova', 'type': 'text'},
-            {'id': 'OpisnyFormularCpv', 'type': 'text'},
-            {'id': 'OpisnyFormularDruh', 'type': 'text'},
-            {'id': 'OpisnyFormularKategoriaSluzieb', 'type': 'text'},
-            {'id': 'OpisnyFormularFunkcnaSpecifikacia', 'type': 'text'},
-            {'id': 'OpisnyFormularTechnickaSpecifikaciaTextova', 'type': 'text'},
-            {'id': 'OpisnyFormularTechnickaSpecifikaciaCiselna', 'type': 'text'},
-            {'id': 'MiestoPlneniaStat', 'type': 'text'},
-            {'id': 'MiestoPlneniaKraj', 'type': 'text'},
-            {'id': 'MiestoPlneniaOkres', 'type': 'text'},
-            {'id': 'MiestoPlneniaObec', 'type': 'text'},
-            {'id': 'MiestoPlneniaUlica', 'type': 'text'},
-            {'id': 'LehotaPlneniaOd', 'type': 'timestamp'},
-            {'id': 'LehotaPlneniaDo', 'type': 'timestamp'},
-            {'id': 'LehotaPlneniaPresne', 'type': 'timestamp'},
-            {'id': 'MnozstvoJednotka', 'type': 'text'},
-            {'id': 'MnozstvoHodnota', 'type': 'float'},
-            {'id': 'MaximalnaVyskaZdrojov', 'type': 'float'},
-            {'id': 'ZmluvnyVztah', 'type': 'text'},
-            {'id': 'FinancovanieEU', 'type': 'bool'},
-            {'id': 'HodnotiaceKriterium', 'type': 'text'},
-            {'id': 'LehotaNaPredkladaniePonuk', 'type': 'timestamp'},
-            {'id': 'PocetNotifikovanychDodavatelov', 'type': 'integer'},
-            {'id': 'VstupnaCena', 'type': 'float'},
-            {'id': 'PocetSutaziacich', 'type': 'integer'},
-            {'id': 'PocetPredlozenychPonuk', 'type': 'integer'},
-            {'id': 'ZaciatokAukcie', 'type': 'timestamp'},
-            {'id': 'TrvanieAukcie_Minut', 'type': 'integer'},
-            {'id': 'PredlzovanieAukcie_Minut', 'type': 'integer'},
-            {'id': 'ProtokolOPriebehuZadavaniaZakazky', 'type': 'text'},
-            {'id': 'Priloha_c1_ZmluvnyFormularZakazky', 'type': 'text'},
-            {'id': 'Priloha_c2_VyslednePoradieDodavatelov', 'type': 'text'},
-            {'id': 'Priloha_c3_Zmluva', 'type': 'text'},
-            {'id': 'Priloha_c4A_ZaznamOSystemovychUdalostiachZakazky', 'type': 'text'},
-            {'id': 'Priloha_c4B_ZaznamOSystemovychUdalostiachElektronickejAukcie', 'type': 'text'},
-            {'id': 'AnonymnyZmluvnyFormularZakazky', 'type': 'text'},
-            {'id': 'ObjednavkovyFormularZakazky', 'type': 'text'},
-        ]
+        fields = []
+        for item in ZAZKAZKY_STRUCTURE:
+            field = {
+                'id': item['id'],
+                'type': item['type']
+            }
+            fields.append(field)
 
         # Push the records to the DataStore table. This will create a resource
         # of type datastore.
@@ -349,10 +302,10 @@ TODO: further details
         }
 
         response = requests.post(
-            '{0}/api/action/datastore_create'.format(ckan_url),
+            '{0}/api/action/datastore_create'.format(self.ckan_url),
             data=json.dumps(data),
             headers={'Content-type': 'application/json',
-                     'Authorization': api_key},
+                     'Authorization': self.api_key},
             # FIXME: security vulnerability => move this to confing.ini so that those using self-signed certs can get stuff woring but those with good certs can by default be safe!!!
             # (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
             verify=False)
