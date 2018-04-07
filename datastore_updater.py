@@ -432,6 +432,9 @@ def convert_float(eks_float):
         '1,0000' -> 1.0
     """
 
+    if len(eks_float) <= 0:
+        return None
+
     return float(eks_float.replace(',', '.'))
 
 
@@ -460,7 +463,7 @@ def upsert(ckan_url, resource_id, api_key, records):
     if response.status_code != 200:
         exit('Error: {0}'.format(response.content))
 
-    print('XXX pushed %d items in a batch' % len(records))
+    print('debug: pushed %d items in a batch' % len(records))
 
 
 def update(config):
