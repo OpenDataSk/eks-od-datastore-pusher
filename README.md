@@ -50,10 +50,10 @@ Add a line like this:
 
 # TODO
 
-- finish initial basic feature(s)
 - add license (for now BSD preffered)
 - review this README and adjust all the stuff copied from ckan/example-earthquake-datastore which does not fit the fork
-- user loggers (instead of print), set log level via config.ini
+- detect duplicates (those do occur in EKS data, we can't put them into DataStore, we should initially at least report that)
+- use loggers (instead of print), set log level via config.ini
 - ...
 
 # Detailed technical stuff
