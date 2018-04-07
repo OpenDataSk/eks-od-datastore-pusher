@@ -55,8 +55,9 @@ def setup(config):
     # Create a dataset first
 
     data = {
-        'name': 'eks-zakazky-datapusher-test',
-        'title': 'EKS - Zakázky - datapusher test ',
+        'name': 'eks-zakazky-datapusher-test5',
+        'title': 'EKS - Zakázky - datapusher test',
+        'owner_org': 'opendata_sk',	# TODO: take that from config.ini
         'notes': '''
 Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during development and testing. Thus:
 
@@ -69,67 +70,102 @@ Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during developm
     response = requests.post('{0}/api/action/package_create'.format(ckan_url),
                              data=json.dumps(data),
                              headers={'Content-type': 'application/json',
-                                      'Authorization': api_key},)
+                                      'Authorization': api_key},
+                             # FIXME: security vulnerability => move this to confing.ini so that those using self-signed certs can get stuff woring but those with good certs can by default be safe!!!
+                             # (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
+                             verify=False)
 
     if response.status_code != 200:
         exit('Error creating dataset: {0}'.format(response.content))
 
     dataset_id = response.json()['result']['id']
 
-    # Get a first dump of the Earthquake data for the past day
-    # XXX
-    return
-
-    past_day_earthquake_data = requests.get(PAST_DAY_DATA_URL).json()
-    records = _get_records(past_day_earthquake_data)
+    # Then create a resource, for now empty
+    
+    records = []
 
     # Manually set the field types to ensure they are handled properly
+    # TODO: Those fileds are for "Zakazky". Later we will enhance that also for other EKS sets (Zmluvy, ...)
 
     fields = [
-        {'id': 'mag', 'type': 'float'},
-        {'id': 'place', 'type': 'text'},
-        {'id': 'time', 'type': 'bigint'},
-        {'id': 'updated', 'type': 'bigint'},
-        {'id': 'tz', 'type': 'integer'},
-        {'id': 'url', 'type': 'text'},
-        {'id': 'detail', 'type': 'text'},
-        {'id': 'felt', 'type': 'integer'},
-        {'id': 'cdi', 'type': 'float'},
-        {'id': 'mmi', 'type': 'float'},
-        {'id': 'alert', 'type': 'text'},
-        {'id': 'status', 'type': 'text'},
-        {'id': 'tsunami', 'type': 'integer'},
-        {'id': 'sig', 'type': 'integer'},
-        {'id': 'net', 'type': 'text'},
-        {'id': 'code', 'type': 'text'},
-        {'id': 'ids', 'type': 'text'},
-        {'id': 'sources', 'type': 'text'},
-        {'id': 'types', 'type': 'text'},
-        {'id': 'nst', 'type': 'integer'},
-        {'id': 'dmin', 'type': 'float'},
-        {'id': 'rms', 'type': 'float'},
-        {'id': 'gap', 'type': 'float'},
-        {'id': 'magType', 'type': 'text'},
-        {'id': 'type', 'type': 'text'},
+        {'id': 'IdentifikatorZakazky', 'type': 'text'},
+        {'id': 'ZakazkaUrl', 'type': 'text'},
+        {'id': 'StavZakazky', 'type': 'text'},
+        {'id': 'PouzityPostup', 'type': 'text'},
+        {'id': 'ObjednavatelDruh', 'type': 'text'},
+        {'id': 'ObjednavatelObchodneMeno', 'type': 'text'},
+        {'id': 'ObjednavatelICO', 'type': 'text'},
+        {'id': 'ObjednavatelStat', 'type': 'text'},
+        {'id': 'ObjednavatelObec', 'type': 'text'},
+        {'id': 'ObjednavatelPSC', 'type': 'text'},
+        {'id': 'ObjednavatelUlica', 'type': 'text'},
+        {'id': 'DatumVyhlasenia', 'type': 'timestamp'},
+        {'id': 'DatumZazmluvnenia', 'type': 'timestamp'},
+        {'id': 'OpisnyFormularNazov', 'type': 'text'},
+        {'id': 'OpisnyFormularKlucoveSlova', 'type': 'text'},
+        {'id': 'OpisnyFormularCpv', 'type': 'text'},
+        {'id': 'OpisnyFormularDruh', 'type': 'text'},
+        {'id': 'OpisnyFormularKategoriaSluzieb', 'type': 'text'},
+        {'id': 'OpisnyFormularFunkcnaSpecifikacia', 'type': 'text'},
+        {'id': 'OpisnyFormularTechnickaSpecifikaciaTextova', 'type': 'text'},
+        {'id': 'OpisnyFormularTechnickaSpecifikaciaCiselna', 'type': 'text'},
+        {'id': 'MiestoPlneniaStat', 'type': 'text'},
+        {'id': 'MiestoPlneniaKraj', 'type': 'text'},
+        {'id': 'MiestoPlneniaOkres', 'type': 'text'},
+        {'id': 'MiestoPlneniaObec', 'type': 'text'},
+        {'id': 'MiestoPlneniaUlica', 'type': 'text'},
+        {'id': 'LehotaPlneniaOd', 'type': 'timestamp'},
+        {'id': 'LehotaPlneniaDo', 'type': 'timestamp'},
+        {'id': 'LehotaPlneniaPresne', 'type': 'timestamp'},
+        {'id': 'MnozstvoJednotka', 'type': 'text'},
+        {'id': 'MnozstvoHodnota', 'type': 'float'},
+        {'id': 'MaximalnaVyskaZdrojov', 'type': 'float'},
+        {'id': 'ZmluvnyVztah', 'type': 'text'},
+        {'id': 'FinancovanieEU', 'type': 'bool'},
+        {'id': 'HodnotiaceKriterium', 'type': 'text'},
+        {'id': 'LehotaNaPredkladaniePonuk', 'type': 'timestamp'},
+        {'id': 'PocetNotifikovanychDodavatelov', 'type': 'integer'},
+        {'id': 'VstupnaCena', 'type': 'float'},
+        {'id': 'PocetSutaziacich', 'type': 'integer'},
+        {'id': 'PocetPredlozenychPonuk', 'type': 'integer'},
+        {'id': 'ZaciatokAukcie', 'type': 'timestamp'},
+        {'id': 'TrvanieAukcie_Minut', 'type': 'integer'},
+        {'id': 'PredlzovanieAukcie_Minut', 'type': 'integer'},
+        {'id': 'ProtokolOPriebehuZadavaniaZakazky', 'type': 'text'},
+        {'id': 'Priloha_c1_ZmluvnyFormularZakazky', 'type': 'text'},
+        {'id': 'Priloha_c2_VyslednePoradieDodavatelov', 'type': 'text'},
+        {'id': 'Priloha_c3_Zmluva', 'type': 'text'},
+        {'id': 'Priloha_c4A_ZaznamOSystemovychUdalostiachZakazky', 'type': 'text'},
+        {'id': 'Priloha_c4B_ZaznamOSystemovychUdalostiachElektronickejAukcie', 'type': 'text'},
+        {'id': 'AnonymnyZmluvnyFormularZakazky', 'type': 'text'},
+        {'id': 'ObjednavkovyFormularZakazky', 'type': 'text'},
     ]
 
     # Push the records to the DataStore table. This will create a resource
-    # of type datastore
+    # of type datastore.
     data = {
         'resource': {
             'package_id': dataset_id,
-            'name': 'Earthquake data',
+            'name': 'Zakazky',
             'format': 'csv',
+            'notes': '''
+Set of multiple CSVs merged together into one complete resource.
+
+TODO: further details
+            '''
         },
         'records': records,
         'fields': fields,
-        'primary_key': ['code'],
+        'primary_key': ['IdentifikatorZakazky'],
     }
 
     response = requests.post('{0}/api/action/datastore_create'.format(ckan_url),
                              data=json.dumps(data),
                              headers={'Content-type': 'application/json',
-                                      'Authorization': api_key},)
+                                      'Authorization': api_key},
+                             # FIXME: security vulnerability => move this to confing.ini so that those using self-signed certs can get stuff woring but those with good certs can by default be safe!!!
+                             # (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
+                             verify=False)
 
     if response.status_code != 200:
         exit('Error: {0}'.format(response.content))
