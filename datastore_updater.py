@@ -272,8 +272,8 @@ class EksZakazkyDatastoreUpdater:
 
         # Create a dataset first
         data = {
-            'name': 'eks-zakazky-datapusher-test8',
-            'title': 'EKS - Zakázky - datapusher test (alpha)',
+            'name': 'eks-zakazky-beta1',
+            'title': 'EKS - Zakázky (beta)',
             'owner_org': 'opendata_sk',	# TODO: take that from config.ini
             'notes': '''
 Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during development and testing. Thus:
