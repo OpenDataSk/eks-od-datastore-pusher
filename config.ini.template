@@ -2,9 +2,33 @@
 ckan_url=http://localhost:5000
 api_key=
 directory_root=
+# Setting this to False allows the use of self-signed certificates ...
+# ... BUT IT IS A SECURITY RISK.
+# (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
+#ssl_verify=True
 
 [zakazky]
+name=eks-zakazky
+title=EKS - Zakázky
+notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+owner=
 resource_id=
 
-[zmluvne_vztahy]
+[zmluvy]
+name=eks-zmluvy-alpha1
+title=EKS - Zmluvy (beta)
+notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+owner=
 resource_id=

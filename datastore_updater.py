@@ -72,12 +72,13 @@ class EksBaseDatastoreUpdater:
         config = configparser.SafeConfigParser()
         config.read('config.ini')
         for key in ('ckan_url', 'api_key',):
-            if not config.get('main', key):
-                exit('Please fill the {0} option in the config.ini file'
+            if not config.has_option('main', key):
+                exit('Please fill the {0} option in the main section of the config.ini file'
                      .format(key))
 
         self.ckan_url = config.get('main', 'ckan_url').rstrip('/')
         self.api_key = config.get('main', 'api_key')
+        self.ssl_verify = config.get('main', 'ssl_verify', fallback=True)
 
         self.directory_root = config.get('main', 'directory_root')
         if not self.directory_root:
@@ -85,10 +86,19 @@ class EksBaseDatastoreUpdater:
                  'to your configuration file.')
 
         # items from subsections, for a specific EKS datasert
+        if not config.has_section(self.CONFIG_SECTION):
+            exit('Please add the {0} section into the config.ini file'
+                 .format(self.CONFIG_SECTION))
+        for key in ('name', 'title', 'notes', 'resource_id'):
+            if not config.has_option(self.CONFIG_SECTION, key):
+                exit('Please fill the {0} option in the {1} section of the config.ini file'
+                     .format(key, self.CONFIG_SECTION))
+
         self.resource_id = config.get(self.CONFIG_SECTION, 'resource_id')
-        if not self.resource_id:
-            exit('You need to add the resource id to your configuration file.\n' +
-                 'Did you run `datastore_update.py setup`first?')
+        self.dataset_name = config.get(self.CONFIG_SECTION, 'name')
+        self.dataset_title = config.get(self.CONFIG_SECTION, 'title')
+        self.dataset_notes = config.get(self.CONFIG_SECTION, 'notes')
+        self.dataset_owner = config.get(self.CONFIG_SECTION, 'owner', fallback=None)
 
 
     def load_state(self):
@@ -115,26 +125,19 @@ class EksBaseDatastoreUpdater:
 
         # Create a dataset first
         data = {
-            'name': 'eks-zakazky-beta1',
-            'title': 'EKS - Zakázky (beta)',
-            'owner_org': 'opendata_sk',	# TODO: take that from config.ini
-            'notes': '''
-Target for https://github.com/OpenDataSk/eks-od-datastore-pusher during development and testing. Thus:
-
-- it may contain bogus data
-- data may vanish without warning
-- BEWARE OF DRAGONS
-            ''',
+            'name': self.dataset_name,
+            'title': self.dataset_title,
+            'notes': self.dataset_notes
         }
+        if not self.dataset_owner is None:
+            data['owner_org'] = self.dataset_owner
 
         response = requests.post(
             '{0}/api/action/package_create'.format(self.ckan_url),
             data=json.dumps(data),
             headers={'Content-type': 'application/json',
                      'Authorization': self.api_key},
-            # FIXME: security vulnerability => move this to confing.ini so that those using self-signed certs can get stuff woring but those with good certs can by default be safe!!!
-            # (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
-            verify=False)
+            verify=self.ssl_verify)
 
         if response.status_code != 200:
             exit('Error creating dataset: {0}'.format(response.content))
@@ -630,6 +633,30 @@ class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
     pass
 
 
+class EksZmluvyDatastoreUpdater(EksBaseDatastoreUpdater):
+    """Specifics for EKS Zmluvy"""
+
+    CONFIG_SECTION = 'zmluvy'
+    DIRECTORY_SUBDIR = 'zmluvy'
+    CSV_FN_PATTERN = 'ZoznamZmluvReport_%Y-%m_.csv'
+
+    # descrition of dataset structure/schema for data in datastore
+    STRUCTURE = [
+    ]
+
+    # We first treat all items as 'text' (see
+    # 'EksBaseDatastoreUpdater.update_month()') but then we "fix" items with
+    # more precise type.
+    DATE_ITEM_NAMES = ['DatumVyhlasenia', 'DatumZazmluvnenia', 'LehotaPlneniaOd',
+        'LehotaPlneniaDo', 'LehotaPlneniaPresne', 'LehotaNaPredkladaniePonuk',
+        'ZaciatokAukcie']
+    FLOAT_ITEM_NAMES = ['MnozstvoHodnota', 'MaximalnaVyskaZdrojov', 'VstupnaCena']
+    INT_ITEM_NAMES = ['PocetNotifikovanychDodavatelov', 'PocetSutaziacich',
+        'PocetPredlozenychPonuk', 'TrvanieAukcie_Minut', 'PredlzovanieAukcie_Minut']
+
+    pass
+
+
 def help():
     print('use \'setup\' or \'update\' parameter')
 
@@ -646,9 +673,14 @@ if __name__ == '__main__':
         help()
         exit()
 
-    eks_zakazky = EksZakazkyDatastoreUpdater()
+    eks_datasets = [
+        EksZakazkyDatastoreUpdater(),
+        EksZmluvyDatastoreUpdater()
+    ]
 
     if action == 'setup':
-        eks_zakazky.setup()
+        for dataset in eks_datasets:
+            dataset.setup()
     elif action == 'update':
-        eks_zakazky.update()
+        for dataset in eks_datasets:
+            dataset.update()
