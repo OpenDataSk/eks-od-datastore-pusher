@@ -352,12 +352,6 @@ resource_id={1}
         mapping = {}
         for item in self.STRUCTURE:
             mapping[item['id']] = item['csvindex']
-        DATE_ITEM_NAMES = ['DatumVyhlasenia', 'DatumZazmluvnenia', 'LehotaPlneniaOd',
-            'LehotaPlneniaDo', 'LehotaPlneniaPresne', 'LehotaNaPredkladaniePonuk',
-            'ZaciatokAukcie']
-        FLOAT_ITEM_NAMES = ['MnozstvoHodnota', 'MaximalnaVyskaZdrojov', 'VstupnaCena']
-        INT_ITEM_NAMES = ['PocetNotifikovanychDodavatelov', 'PocetSutaziacich',
-            'PocetPredlozenychPonuk', 'TrvanieAukcie_Minut', 'PredlzovanieAukcie_Minut']
 
         # some other hacks:
         # - some EKS items aer too big, triggering "csv.Error: field larger than field limit"
@@ -389,11 +383,11 @@ resource_id={1}
                 for mitem in mapping:
                     rowjson[mitem] = row[mapping[mitem]]
                 # fix dates, floats, etc.:
-                for mitem in DATE_ITEM_NAMES:
+                for mitem in self.DATE_ITEM_NAMES:
                     rowjson[mitem] = self.convert_date(row[mapping[mitem]])
-                for mitem in FLOAT_ITEM_NAMES:
+                for mitem in self.FLOAT_ITEM_NAMES:
                     rowjson[mitem] = self.convert_float(row[mapping[mitem]])
-                for mitem in INT_ITEM_NAMES:
+                for mitem in self.INT_ITEM_NAMES:
                     rowjson[mitem] = self.convert_int(row[mapping[mitem]])
 
                 # TODO: add duplicate detection: For example
@@ -614,6 +608,16 @@ class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
             'type': 'text',
             'csvindex': 50},
     ]
+
+    # We first treat all items as 'text' (see
+    # 'EksBaseDatastoreUpdater.update_month()') but then we "fix" items with
+    # more precise type.
+    DATE_ITEM_NAMES = ['DatumVyhlasenia', 'DatumZazmluvnenia', 'LehotaPlneniaOd',
+        'LehotaPlneniaDo', 'LehotaPlneniaPresne', 'LehotaNaPredkladaniePonuk',
+        'ZaciatokAukcie']
+    FLOAT_ITEM_NAMES = ['MnozstvoHodnota', 'MaximalnaVyskaZdrojov', 'VstupnaCena']
+    INT_ITEM_NAMES = ['PocetNotifikovanychDodavatelov', 'PocetSutaziacich',
+        'PocetPredlozenychPonuk', 'TrvanieAukcie_Minut', 'PredlzovanieAukcie_Minut']
 
     pass
 
