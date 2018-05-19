@@ -68,6 +68,7 @@ class EksBaseDatastoreUpdater:
         self.state = {}
         self.load_state()
 
+        # items from main section, common to all EKS datasets
         config = configparser.SafeConfigParser()
         config.read('config.ini')
         for key in ('ckan_url', 'api_key',):
@@ -78,15 +79,16 @@ class EksBaseDatastoreUpdater:
         self.ckan_url = config.get('main', 'ckan_url').rstrip('/')
         self.api_key = config.get('main', 'api_key')
 
-        self.resource_id = config.get('main', 'resource_id')
+        self.directory_root = config.get('main', 'directory_root')
+        if not self.directory_root:
+            exit('You need to add the path to root directory with EKS files ' +
+                 'to your configuration file.')
+
+        # items from subsections, for a specific EKS datasert
+        self.resource_id = config.get(self.CONFIG_SECTION, 'resource_id')
         if not self.resource_id:
             exit('You need to add the resource id to your configuration file.\n' +
                  'Did you run `datastore_update.py setup`first?')
-
-        self.directory_zakazky = config.get('main', 'directory_zakazky')
-        if not self.resource_id:
-            exit('You need to add the path to directory with "Zakazky" files ' +
-                 'to your configuration file.')
 
 
     def load_state(self):
@@ -203,15 +205,15 @@ resource_id={1}
 
         So here, '2018-3' (a.k.a. "CVS date") would be returned."""
 
-        # list the self.directory_zakazky, skip directories, parse out
+        # list the self.directory_root + DIRECTORY_SUBDIR, skip directories, parse out
         # available dates (YYYY-M) from file names
+        csv_dir = os.path.join(self.directory_root, self.DIRECTORY_SUBDIR)
         file_dates = []
-        print(os.listdir(self.directory_zakazky))
-        for diritem in os.listdir(self.directory_zakazky):
-            if not os.path.isfile(os.path.join(self.directory_zakazky, diritem)):
+        for diritem in os.listdir(csv_dir):
+            if not os.path.isfile(os.path.join(csv_dir, diritem)):
                 continue
             try:
-                zdate = datetime.datetime.strptime(diritem, 'ZoznamZakaziekReport_%Y-%m_.csv')
+                zdate = datetime.datetime.strptime(diritem, self.CSV_FN_PATTERN)
                 file_dates.append(zdate)
             except ValueError:
                 print("debug: file %s does not match, skipping" % diritem)
@@ -361,7 +363,8 @@ resource_id={1}
         records = []
 
         # Load the CSV file
-        csvfn = '%s/ZoznamZakaziekReport_%s_.csv' % (self.directory_zakazky, csvdate)
+        csvfn = os.path.join(self.directory_root, self.DIRECTORY_SUBDIR,
+            'ZoznamZakaziekReport_%s_.csv' % csvdate)
         if not os.path.exists(csvfn):
             print("file %s not available, it looks like we are done" % csvfn)
             return False
@@ -451,6 +454,10 @@ resource_id={1}
 
 class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
     """Specifics for EKS Zazkazky"""
+
+    CONFIG_SECTION = 'zakazky'
+    DIRECTORY_SUBDIR = 'zakazky'
+    CSV_FN_PATTERN = 'ZoznamZakaziekReport_%Y-%m_.csv'
 
     # descrition of dataset structure/schema for data in datastore
     STRUCTURE = [

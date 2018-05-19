@@ -1,5 +1,10 @@
 [main]
 ckan_url=http://localhost:5000
 api_key=
+directory_root=
+
+[zakazky]
 resource_id=
-directory_zakazky=
+
+[zmluvne_vztahy]
+resource_id=
