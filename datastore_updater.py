@@ -621,14 +621,20 @@ class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
     pass
 
 
+def help():
+    print('use \'setup\' or \'update\' parameter')
+
+
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
+        help()
         exit()
 
     action = sys.argv[1]
 
     if action not in ('setup', 'update',):
+        help()
         exit()
 
     eks_zakazky = EksZakazkyDatastoreUpdater()
