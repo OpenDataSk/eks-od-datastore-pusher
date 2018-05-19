@@ -368,7 +368,7 @@ resource_id={1}
 
         # Load the CSV file
         csvfn = os.path.join(self.directory_root, self.DIRECTORY_SUBDIR,
-            'ZoznamZakaziekReport_%s_.csv' % csvdate)
+            self.CSV_FN_PATTERN_2 % csvdate)
         if not os.path.exists(csvfn):
             print("file %s not available, it looks like we are done" % csvfn)
             return False
@@ -463,6 +463,8 @@ class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
     CONFIG_SECTION = 'zakazky'
     DIRECTORY_SUBDIR = 'zakazky'
     CSV_FN_PATTERN = 'ZoznamZakaziekReport_%Y-%m_.csv'
+    #  FIXME: rework 'next_csvdate()' & co. to pass timestamp so that we do not neeed this crude hack:
+    CSV_FN_PATTERN_2 = 'ZoznamZakaziekReport_%s_.csv'
 
     # descrition of dataset structure/schema for data in datastore
     STRUCTURE = [
@@ -640,6 +642,8 @@ class EksZmluvyDatastoreUpdater(EksBaseDatastoreUpdater):
     CONFIG_SECTION = 'zmluvy'
     DIRECTORY_SUBDIR = 'zmluvy'
     CSV_FN_PATTERN = 'ZoznamZmluvReport_%Y-%m_.csv'
+    #  FIXME: rework 'next_csvdate()' & co. to pass timestamp so that we do not neeed this crude hack:
+    CSV_FN_PATTERN_2 = 'ZoznamZmluvReport_%s_.csv'
 
     # descrition of dataset structure/schema for data in datastore
     STRUCTURE = [
