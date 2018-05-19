@@ -58,7 +58,7 @@ BATCH_SIZE = 1000
 STATE_FILE = 'datastore_updater.state'
 
 # state keys
-STATE_LAST_PROCESSED = 'last_processed'
+STATE_LAST_PROCESSED = 'last_processed.'
 
 
 class EksBaseDatastoreUpdater:
@@ -416,7 +416,7 @@ resource_id={1}
 
         # upsert the remainer of records, mark state
         self.upsert(records)
-        self.state[STATE_LAST_PROCESSED] = csvdate
+        self.state[STATE_LAST_PROCESSED + self.CONFIG_SECTION] = csvdate
         self.save_state()
 
         print('DataStore resource successfully updated with %d records.' % counter)
@@ -429,8 +429,9 @@ resource_id={1}
 
         # Load "state" (YYYY-M of last processed file); if not then
         month_to_process = None
-        if STATE_LAST_PROCESSED in self.state:
-            month_to_process = self.state[STATE_LAST_PROCESSED]
+        state_key = STATE_LAST_PROCESSED + self.CONFIG_SECTION
+        if state_key in self.state:
+            month_to_process = self.state[state_key]
         if month_to_process is None:
             month_to_process = self.find_oldest_csvdate()
 
