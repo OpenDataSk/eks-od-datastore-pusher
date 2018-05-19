@@ -219,7 +219,8 @@ ZAZKAZKY_STRUCTURE = [
 ]
 
 
-class EksZakazkyDatastoreUpdater:
+class EksBaseDatastoreUpdater:
+    """Base class for EKS datastore pusher containing common code and structures."""
 
     def __init__(self):
         self.state = {}
@@ -612,6 +613,12 @@ resource_id={1}
         print('%d files processed.' % counter)
 
         return
+
+
+class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
+    """Specifics for EKS Zazkazky"""
+
+    pass
 
 
 if __name__ == '__main__':
