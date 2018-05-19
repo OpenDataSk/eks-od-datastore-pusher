@@ -191,8 +191,9 @@ TODO: further details
 Dataset and DataStore resource successfully created with {0} records.
 Please add the resource id to your ini file:
 
+[{2}]
 resource_id={1}
-        '''.format(len(records), resource_id))
+        '''.format(len(records), resource_id, self.CONFIG_SECTION))
 
 
     def find_oldest_csvdate(self):
