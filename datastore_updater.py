@@ -78,7 +78,7 @@ class EksBaseDatastoreUpdater:
 
         self.ckan_url = config.get('main', 'ckan_url').rstrip('/')
         self.api_key = config.get('main', 'api_key')
-        self.ssl_verify = config.get('main', 'ssl_verify', fallback=True)
+        self.ssl_verify = config.getboolean('main', 'ssl_verify', fallback=True)
 
         self.directory_root = config.get('main', 'directory_root')
         if not self.directory_root:
