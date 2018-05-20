@@ -108,16 +108,18 @@ class EksBaseDatastoreUpdater:
         if not config.has_section(self.CONFIG_SECTION):
             exit('Please add the {0} section into the config.ini file'
                  .format(self.CONFIG_SECTION))
-        for key in ('name', 'title', 'notes', 'resource_id'):
+        for key in ('dataset.name', 'dataset.title', 'dataset.notes', 'resource.id', 'resource.name', 'resource.notes'):
             if not config.has_option(self.CONFIG_SECTION, key):
                 exit('Please fill the {0} option in the {1} section of the config.ini file'
                      .format(key, self.CONFIG_SECTION))
 
-        self.resource_id = config.get(self.CONFIG_SECTION, 'resource_id')
-        self.dataset_name = config.get(self.CONFIG_SECTION, 'name')
-        self.dataset_title = config.get(self.CONFIG_SECTION, 'title')
-        self.dataset_notes = config.get(self.CONFIG_SECTION, 'notes')
-        self.dataset_owner = config.get(self.CONFIG_SECTION, 'owner', fallback=None)
+        self.dataset_name = config.get(self.CONFIG_SECTION, 'dataset.name')
+        self.dataset_title = config.get(self.CONFIG_SECTION, 'dataset.title')
+        self.dataset_notes = config.get(self.CONFIG_SECTION, 'dataset.notes')
+        self.dataset_owner = config.get(self.CONFIG_SECTION, 'dataset.owner', fallback=None)
+        self.resource_id = config.get(self.CONFIG_SECTION, 'resource.id')
+        self.resource_name = config.get(self.CONFIG_SECTION, 'resource.name')
+        self.resource_notes = config.get(self.CONFIG_SECTION, 'resource.notes')
 
 
     def load_state(self):
@@ -180,13 +182,9 @@ class EksBaseDatastoreUpdater:
         data = {
             'resource': {
                 'package_id': dataset_id,
-                'name': 'Zakazky',
+                'name': self.resource_name,
                 'format': 'csv',
-                'notes': '''
-Set of multiple CSVs merged together into one complete resource.
-
-TODO: further details
-                '''
+                'notes': self.resource_notes
             },
             'records': records,
             'fields': fields,

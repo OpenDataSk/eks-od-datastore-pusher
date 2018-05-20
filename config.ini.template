@@ -8,27 +8,31 @@ directory_root=
 #ssl_verify=True
 
 [zakazky]
-name=eks-zakazky
-title=EKS - Zakázky
-notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+dataset.name=eks-zakazky
+dataset.title=EKS - Zakázky
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
 	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
 	This is a beta for now, thus:
 
 	- it may contain bogus data
 	- data may vanish without warning
 	- BEWARE OF DRAGONS
-owner=
-resource_id=
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
 
 [zmluvy]
-name=eks-zmluvy-alpha1
-title=EKS - Zmluvy (beta)
-notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+dataset.name=eks-zmluvy-alpha1
+dataset.title=EKS - Zmluvy (beta)
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
 	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
 	This is a beta for now, thus:
 
 	- it may contain bogus data
 	- data may vanish without warning
 	- BEWARE OF DRAGONS
-owner=
-resource_id=
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
