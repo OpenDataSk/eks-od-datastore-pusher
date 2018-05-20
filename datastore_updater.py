@@ -72,6 +72,7 @@ class EksBaseDatastoreUpdater:
     CSV_FN_PATTERN_2 = None
 
     # description of dataset structure/schema for data in datastore
+    PRIMARY_KEYS = None
     STRUCTURE = None
 
     # We first treat all items as 'text' (see
@@ -189,7 +190,7 @@ TODO: further details
             },
             'records': records,
             'fields': fields,
-            'primary_key': ['IdentifikatorZakazky'],
+            'primary_key': self.PRIMARY_KEYS,
         }
 
         response = requests.post(
@@ -479,6 +480,7 @@ class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
     CSV_FN_PATTERN = 'ZoznamZakaziekReport_%Y-%m_.csv'
     CSV_FN_PATTERN_2 = 'ZoznamZakaziekReport_%s_.csv'
 
+    PRIMARY_KEYS = ['IdentifikatorZakazky']
     STRUCTURE = [
         {'id': 'IdentifikatorZakazky',
             'type': 'text',
@@ -653,6 +655,7 @@ class EksZmluvyDatastoreUpdater(EksBaseDatastoreUpdater):
     CSV_FN_PATTERN = 'ZoznamZmluvReport_%Y-%m_.csv'
     CSV_FN_PATTERN_2 = 'ZoznamZmluvReport_%s_.csv'
 
+    PRIMARY_KEYS = ['IdentifikatorZakazky']
     STRUCTURE = [
         {'id': 'IdentifikatorZakazky',
             'type': 'text',
