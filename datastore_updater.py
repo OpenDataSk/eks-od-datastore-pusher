@@ -423,7 +423,7 @@ resource_id={1}
         self.state[STATE_LAST_PROCESSED + self.CONFIG_SECTION] = csvdate
         self.save_state()
 
-        print('DataStore resource successfully updated with %d records.' % counter)
+        print("DataStore resource '{1}' successfully updated with {0} records.".format(counter, self.CONFIG_SECTION))
 
         return True
 
