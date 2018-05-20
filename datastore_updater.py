@@ -470,6 +470,56 @@ resource_id={1}
         return
 
 
+class EksAukcnePonukyDatastoreUpdater(EksBaseDatastoreUpdater):
+    """Specifics for EKS Aukcne Ponuky"""
+
+    CONFIG_SECTION = 'aukcne_ponuky'
+    DIRECTORY_SUBDIR = 'aukcne_ponuky'
+    CSV_FN_PATTERN = 'ZoznamAukcnychPonukReport_%Y-%m_.csv'
+    CSV_FN_PATTERN_2 = 'ZoznamAukcnychPonukReport_%s_.csv'
+
+    PRIMARY_KEYS = ['VerejnyIdentifikatorZakazky', 'DatumPredlozeniaPonuky']
+    STRUCTURE = [
+        {'id': 'VerejnyIdentifikatorZakazky',
+            'type': 'text',
+            'csvindex': 0},
+        {'id': 'DatumPredlozeniaPonuky',
+            'type': 'timestamp',
+            'csvindex': 1},
+        {'id': 'Dodavatel_ICO',
+            'type': 'text',
+            'csvindex': 2},
+        {'id': 'Dodavatel_ObchodnyNazov',
+            'type': 'text',
+            'csvindex': 3},
+        {'id': 'Dodavatel_StatSidla',
+            'type': 'text',
+            'csvindex': 4},
+        {'id': 'PredlozenaCenaBezDPH',
+            'type': 'float',
+            'csvindex': 5},
+        {'id': 'SadzbaDPH',
+            'type': 'float',
+            'csvindex': 6},
+        {'id': 'PredlozenaCenaSDPH',
+            'type': 'float',
+            'csvindex': 7},
+        {'id': 'VyslednePoradie',
+            'type': 'integer',
+            'csvindex': 8},
+        {'id': 'VstupnaPonuka',
+            'type': 'bool',
+            'csvindex': 9},
+        {'id': 'Platna',
+            'type': 'bool',
+            'csvindex': 10},
+    ]
+
+    DATE_ITEM_NAMES = ['DatumPredlozeniaPonuky']
+    FLOAT_ITEM_NAMES = ['PredlozenaCenaBezDPH', 'SadzbaDPH', 'PredlozenaCenaSDPH']
+    INT_ITEM_NAMES = ['VyslednePoradie']
+
+
 class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
     """Specifics for EKS Zazkazky"""
 
@@ -642,8 +692,6 @@ class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
     INT_ITEM_NAMES = ['PocetNotifikovanychDodavatelov', 'PocetSutaziacich',
         'PocetPredlozenychPonuk', 'TrvanieAukcie_Minut', 'PredlzovanieAukcie_Minut']
 
-    pass
-
 
 class EksZmluvyDatastoreUpdater(EksBaseDatastoreUpdater):
     """Specifics for EKS Zmluvy"""
@@ -765,8 +813,6 @@ class EksZmluvyDatastoreUpdater(EksBaseDatastoreUpdater):
         'CenaVrataneDPH', 'Uspora']
     INT_ITEM_NAMES = []
 
-    pass
-
 
 def help():
     print('use \'setup\' or \'update\' parameter')
@@ -785,6 +831,7 @@ if __name__ == '__main__':
         exit()
 
     eks_datasets = [
+        EksAukcnePonukyDatastoreUpdater(),
         EksZakazkyDatastoreUpdater(),
         EksZmluvyDatastoreUpdater()
     ]
