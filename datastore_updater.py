@@ -64,6 +64,24 @@ STATE_LAST_PROCESSED = 'last_processed.'
 class EksBaseDatastoreUpdater:
     """Base class for EKS datastore pusher containing common code and structures."""
 
+    # basic per-dataset stuff, here set to None, proper values set in derived classes
+    CONFIG_SECTION = None
+    DIRECTORY_SUBDIR = None
+    CSV_FN_PATTERN = None
+    #  FIXME: rework 'next_csvdate()' & co. to pass timestamp so that we do not neeed this crude hack:
+    CSV_FN_PATTERN_2 = None
+
+    # description of dataset structure/schema for data in datastore
+    STRUCTURE = None
+
+    # We first treat all items as 'text' (see
+    # 'EksBaseDatastoreUpdater.update_month()') but then we "fix" items with
+    # more precise type.
+    DATE_ITEM_NAMES = None
+    FLOAT_ITEM_NAMES = None
+    INT_ITEM_NAMES = None
+
+
     def __init__(self):
         self.state = {}
         self.load_state()
@@ -261,7 +279,7 @@ resource_id={1}
 
         for sitem in self.STRUCTURE:
             # We strip \ufeff because it's in the CSV file header, thus
-            # "damaging" name of first column.
+            # "damaging" name of the first column.
             ritem = row[sitem['csvindex']].strip('"\ufeff')
             if sitem['id'] != ritem:
                 print("error: '%s' expected in row %d, '%s' found"
@@ -418,7 +436,7 @@ resource_id={1}
                     records = []
 
 
-        # upsert the remainer of records, mark state
+        # upsert remaining records, mark state
         self.upsert(records)
         self.state[STATE_LAST_PROCESSED + self.CONFIG_SECTION] = csvdate
         self.save_state()
@@ -440,10 +458,10 @@ resource_id={1}
             month_to_process = self.find_oldest_csvdate()
 
         # process "last processed" month assuming:
-        # 1) if it also still "current month": we will process all, pick
-        # updates, re-process again items/line maybe needlessly (but such
+        # 1) if it is still "current month": we will process all, pick
+        # updates, re-process again items/lines maybe needlessly (but such
         # waste is considered OK while it helps avoid more code)
-        # 2) if it is "last month": we weill process it "for the last time",
+        # 2) if it is "last month": we will process it "for the last time",
         # picking up latest updates and then proceed to the next (i.e.
         # current) month
         counter = 0
@@ -463,10 +481,8 @@ class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
     CONFIG_SECTION = 'zakazky'
     DIRECTORY_SUBDIR = 'zakazky'
     CSV_FN_PATTERN = 'ZoznamZakaziekReport_%Y-%m_.csv'
-    #  FIXME: rework 'next_csvdate()' & co. to pass timestamp so that we do not neeed this crude hack:
     CSV_FN_PATTERN_2 = 'ZoznamZakaziekReport_%s_.csv'
 
-    # descrition of dataset structure/schema for data in datastore
     STRUCTURE = [
         {'id': 'IdentifikatorZakazky',
             'type': 'text',
@@ -623,9 +639,6 @@ class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
             'csvindex': 50},
     ]
 
-    # We first treat all items as 'text' (see
-    # 'EksBaseDatastoreUpdater.update_month()') but then we "fix" items with
-    # more precise type.
     DATE_ITEM_NAMES = ['DatumVyhlasenia', 'DatumZazmluvnenia', 'LehotaPlneniaOd',
         'LehotaPlneniaDo', 'LehotaPlneniaPresne', 'LehotaNaPredkladaniePonuk',
         'ZaciatokAukcie']
@@ -642,10 +655,8 @@ class EksZmluvyDatastoreUpdater(EksBaseDatastoreUpdater):
     CONFIG_SECTION = 'zmluvy'
     DIRECTORY_SUBDIR = 'zmluvy'
     CSV_FN_PATTERN = 'ZoznamZmluvReport_%Y-%m_.csv'
-    #  FIXME: rework 'next_csvdate()' & co. to pass timestamp so that we do not neeed this crude hack:
     CSV_FN_PATTERN_2 = 'ZoznamZmluvReport_%s_.csv'
 
-    # descrition of dataset structure/schema for data in datastore
     STRUCTURE = [
         {'id': 'IdentifikatorZakazky',
             'type': 'text',
@@ -751,9 +762,6 @@ class EksZmluvyDatastoreUpdater(EksBaseDatastoreUpdater):
             'csvindex': 33},
     ]
 
-    # We first treat all items as 'text' (see
-    # 'EksBaseDatastoreUpdater.update_month()') but then we "fix" items with
-    # more precise type.
     DATE_ITEM_NAMES = ['LehotaPlneniaOd', 'LehotaPlneniaDo', 'LehotaPlneniaPresne',
         'DatumZazmluvnenia']
     FLOAT_ITEM_NAMES = ['MnozstvoHodnota', 'CenaBezDPH', 'CenaSadzbaDPH',
