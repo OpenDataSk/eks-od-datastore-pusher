@@ -197,9 +197,7 @@ TODO: further details
             data=json.dumps(data),
             headers={'Content-type': 'application/json',
                      'Authorization': self.api_key},
-            # FIXME: security vulnerability => move this to confing.ini so that those using self-signed certs can get stuff woring but those with good certs can by default be safe!!!
-            # (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
-            verify=False)
+            verify=self.ssl_verify)
 
         if response.status_code != 200:
             exit('Error: {0}'.format(response.content))
@@ -349,9 +347,7 @@ resource_id={1}
             data=json.dumps(data),
             headers={'Content-type': 'application/json',
                      'Authorization': self.api_key},
-            # FIXME: security vulnerability => move this to confing.ini so that those using self-signed certs can get stuff woring but those with good certs can by default be safe!!!
-            # (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
-            verify=False)
+            verify=self.ssl_verify)
 
         if response.status_code != 200:
             exit('Error: {0}'.format(response.content))
