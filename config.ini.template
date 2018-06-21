@@ -52,6 +52,21 @@ resource.id=
 resource.name=API
 resource.notes=Set of multiple CSVs merged together into one complete resource.
 
+[referencie]
+dataset.name=eks-referencie
+dataset.title=EKS - Referencie
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
+
 [zakazky]
 dataset.name=eks-zakazky
 dataset.title=EKS - Zakázky

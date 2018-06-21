@@ -615,6 +615,50 @@ class OpisneFormulare(EksBaseDatastoreUpdater):
     INT_ITEM_NAMES = ['OpisnyFormularPocetVyhlasenychZakaziek']
 
 
+class Referencie(EksBaseDatastoreUpdater):
+    """Specifics for EKS Referencie"""
+
+    CONFIG_SECTION = 'referencie'
+    DIRECTORY_SUBDIR = 'referencie'
+    CSV_FN_PATTERN = 'ZoznamReferenciiReport_%Y-%m_.csv'
+    CSV_FN_PATTERN_2 = 'ZoznamReferenciiReport_%s_.csv'
+
+    PRIMARY_KEYS = ['IdentifikatorZakazky']
+    STRUCTURE = [
+        {'id': 'IdentifikatorZakazky',
+            'type': 'text',
+            'csvindex': 0},
+        {'id': 'ZakazkaUrl',
+            'type': 'text',
+            'csvindex': 1},
+        {'id': 'ReferenciaTyp',
+            'type': 'text',
+            'csvindex': 2},
+        {'id': 'ReferenciaDatumPoslednejZmeny',
+            'type': 'timestamp',
+            'csvindex': 3},
+        {'id': 'ReferenciaDovodPoslednejZmeny',
+            'type': 'text',
+            'csvindex': 4},
+        {'id': 'ReferenciaPolozka',
+            'type': 'text',
+            'csvindex': 5},
+        {'id': 'DodavatelObchodneMeno',
+            'type': 'text',
+            'csvindex': 6},
+        {'id': 'DodavatelICO',
+            'type': 'text',
+            'csvindex': 7},
+        {'id': 'DodavatelStat',
+            'type': 'text',
+            'csvindex': 8},
+    ]
+
+    DATE_ITEM_NAMES = ['ReferenciaDatumPoslednejZmeny']
+    FLOAT_ITEM_NAMES = []
+    INT_ITEM_NAMES = []
+
+
 class Zakazky(EksBaseDatastoreUpdater):
     """Specifics for EKS Zazkazky"""
 
@@ -929,6 +973,7 @@ if __name__ == '__main__':
         AukcnePonuky(),
         KontrakracnePonuky(),
         OpisneFormulare(),
+        Referencie(),
         Zakazky(),
         Zmluvy()
     ]
