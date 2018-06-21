@@ -470,7 +470,7 @@ resource_id={1}
         return
 
 
-class EksAukcnePonukyDatastoreUpdater(EksBaseDatastoreUpdater):
+class AukcnePonuky(EksBaseDatastoreUpdater):
     """Specifics for EKS Aukcne Ponuky"""
 
     CONFIG_SECTION = 'aukcne_ponuky'
@@ -520,7 +520,7 @@ class EksAukcnePonukyDatastoreUpdater(EksBaseDatastoreUpdater):
     INT_ITEM_NAMES = ['VyslednePoradie']
 
 
-class EksKontrakracnePonukyDatastoreUpdater(EksBaseDatastoreUpdater):
+class KontrakracnePonuky(EksBaseDatastoreUpdater):
     """Specifics for EKS Kontraktacne Ponuky"""
 
     CONFIG_SECTION = 'kontraktacne_ponuky'
@@ -567,7 +567,7 @@ class EksKontrakracnePonukyDatastoreUpdater(EksBaseDatastoreUpdater):
     INT_ITEM_NAMES = ['VyslednePoradie']
 
 
-class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
+class Zakazky(EksBaseDatastoreUpdater):
     """Specifics for EKS Zazkazky"""
 
     CONFIG_SECTION = 'zakazky'
@@ -740,7 +740,7 @@ class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
         'PocetPredlozenychPonuk', 'TrvanieAukcie_Minut', 'PredlzovanieAukcie_Minut']
 
 
-class EksZmluvyDatastoreUpdater(EksBaseDatastoreUpdater):
+class Zmluvy(EksBaseDatastoreUpdater):
     """Specifics for EKS Zmluvy"""
 
     CONFIG_SECTION = 'zmluvy'
@@ -878,10 +878,10 @@ if __name__ == '__main__':
         exit()
 
     eks_datasets = [
-        EksAukcnePonukyDatastoreUpdater(),
-        EksKontrakracnePonukyDatastoreUpdater(),
-        EksZakazkyDatastoreUpdater(),
-        EksZmluvyDatastoreUpdater()
+        AukcnePonuky(),
+        KontrakracnePonuky(),
+        Zakazky(),
+        Zmluvy()
     ]
 
     if action == 'setup':
