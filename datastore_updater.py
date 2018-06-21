@@ -567,6 +567,53 @@ class KontrakracnePonuky(EksBaseDatastoreUpdater):
     INT_ITEM_NAMES = ['VyslednePoradie']
 
 
+class OpisneFormulare(EksBaseDatastoreUpdater):
+    """Specifics for EKS Opisne Formulare"""
+
+    CONFIG_SECTION = 'opisne_formulare'
+    DIRECTORY_SUBDIR = 'opisne_formulare'
+    CSV_FN_PATTERN = 'ZoznamOpisnychFormularovReport_%Y-%m_.csv'
+    CSV_FN_PATTERN_2 = 'ZoznamOpisnychFormularovReport_%s_.csv'
+
+    PRIMARY_KEYS = ['OpisnyFormularIdentifikator']
+    STRUCTURE = [
+        {'id': 'OpisnyFormularIdentifikator',
+            'type': 'text',
+            'csvindex': 0},
+        {'id': 'OpisnyFormularStav',
+            'type': 'text',
+            'csvindex': 1},
+        {'id': 'OpisnyFormularNazov',
+            'type': 'text',
+            'csvindex': 2},
+        {'id': 'OpisnyFormularKlucoveSlova',
+            'type': 'text',
+            'csvindex': 3},
+        {'id': 'OpisnyFormularCpv',
+            'type': 'text',
+            'csvindex': 4},
+        {'id': 'OpisnyFormularDruh',
+            'type': 'text',
+            'csvindex': 5},
+        {'id': 'OpisnyFormularKategoriaSluzieb',
+            'type': 'text',
+            'csvindex': 6},
+        {'id': 'OpisnyFormularUrl',
+            'type': 'text',
+            'csvindex': 7},
+        {'id': 'OpisnyFormularPocetVyhlasenychZakaziek',
+            'type': 'integer',
+            'csvindex': 8},
+        {'id': 'OpisnyFormularObchodovanaSumaBezDPH',
+            'type': 'float',
+            'csvindex': 9},
+    ]
+
+    DATE_ITEM_NAMES = []
+    FLOAT_ITEM_NAMES = ['OpisnyFormularObchodovanaSumaBezDPH']
+    INT_ITEM_NAMES = ['OpisnyFormularPocetVyhlasenychZakaziek']
+
+
 class Zakazky(EksBaseDatastoreUpdater):
     """Specifics for EKS Zazkazky"""
 
@@ -880,6 +927,7 @@ if __name__ == '__main__':
     eks_datasets = [
         AukcnePonuky(),
         KontrakracnePonuky(),
+        OpisneFormulare(),
         Zakazky(),
         Zmluvy()
     ]
