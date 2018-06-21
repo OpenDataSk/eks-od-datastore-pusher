@@ -520,6 +520,53 @@ class EksAukcnePonukyDatastoreUpdater(EksBaseDatastoreUpdater):
     INT_ITEM_NAMES = ['VyslednePoradie']
 
 
+class EksKontrakracnePonukyDatastoreUpdater(EksBaseDatastoreUpdater):
+    """Specifics for EKS Kontraktacne Ponuky"""
+
+    CONFIG_SECTION = 'kontraktacne_ponuky'
+    DIRECTORY_SUBDIR = 'kontraktacne_ponuky'
+    CSV_FN_PATTERN = 'ZoznamKontraktacnychPonukReport_%Y-%m_.csv'
+    CSV_FN_PATTERN_2 = 'ZoznamKontraktacnychPonukReport_%s_.csv'
+
+    PRIMARY_KEYS = ['VerejnyIdentifikatorZakazky', 'DatumPredlozeniaPonuky']
+    STRUCTURE = [
+    {'id': 'VerejnyIdentifikatorZakazky',
+        'type': 'text',
+        'csvindex': 0},
+    {'id': 'DatumPredlozeniaPonuky',
+        'type': 'timestamp',
+        'csvindex': 1},
+    {'id': 'Dodavatel_ICO',
+        'type': 'text',
+        'csvindex': 2},
+    {'id': 'Dodavatel_ObchodnyNazov',
+        'type': 'text',
+        'csvindex': 3},
+    {'id': 'Dodavatel_StatSidla',
+        'type': 'text',
+        'csvindex': 4},
+    {'id': 'PredlozenaCenaBezDPH',
+        'type': 'float',
+        'csvindex': 5},
+    {'id': 'SadzbaDPH',
+        'type': 'float',
+        'csvindex': 6},
+    {'id': 'PredlozenaCenaSDPH',
+        'type': 'float',
+        'csvindex': 7},
+    {'id': 'VyslednePoradie',
+        'type': 'integer',
+        'csvindex': 8},
+    {'id': 'StavKontraktacnejPonuky',
+        'type': 'text',
+        'csvindex': 9},
+    ]
+
+    DATE_ITEM_NAMES = ['DatumPredlozeniaPonuky']
+    FLOAT_ITEM_NAMES = ['PredlozenaCenaBezDPH', 'SadzbaDPH', 'PredlozenaCenaSDPH']
+    INT_ITEM_NAMES = ['VyslednePoradie']
+
+
 class EksZakazkyDatastoreUpdater(EksBaseDatastoreUpdater):
     """Specifics for EKS Zazkazky"""
 
@@ -832,6 +879,7 @@ if __name__ == '__main__':
 
     eks_datasets = [
         EksAukcnePonukyDatastoreUpdater(),
+        EksKontrakracnePonukyDatastoreUpdater(),
         EksZakazkyDatastoreUpdater(),
         EksZmluvyDatastoreUpdater()
     ]

@@ -22,6 +22,21 @@ resource.id=
 resource.name=API
 resource.notes=Set of multiple CSVs merged together into one complete resource.
 
+[kontraktacne_ponuky]
+dataset.name=eks-kontraktacne-ponuky
+dataset.title=EKS - Kontraktačné ponuky
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
+
 [zakazky]
 dataset.name=eks-zakazky
 dataset.title=EKS - Zakázky
