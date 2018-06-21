@@ -391,12 +391,12 @@ resource_id={1}
             itemreader = csv.reader(csvfile)
             counter = 0
             for row in itemreader:
+                counter += 1
+
                 if counter == 1:
                     if not self.csv_header_check(row):
                         exit('%s header check failed' % csvfn)
                     continue
-
-                counter += 1
 
                 # convert row from CSV into JSON row
                 rowjson = {}
@@ -436,7 +436,8 @@ resource_id={1}
         self.state[STATE_LAST_PROCESSED + self.CONFIG_SECTION] = csvdate
         self.save_state()
 
-        print("DataStore resource '{1}' successfully updated with {0} records.".format(counter, self.CONFIG_SECTION))
+        print("DataStore resource '{1}' successfully updated with {0} records.".format(
+            (counter - 1), self.CONFIG_SECTION))
 
         return True
 
