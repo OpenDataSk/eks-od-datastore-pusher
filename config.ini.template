@@ -83,7 +83,7 @@ resource.name=API
 resource.notes=Set of multiple CSVs merged together into one complete resource.
 
 [zakazky_a_zmluvy]
-dataset.name=eks-zakazky- a-zmluvy
+dataset.name=eks-zakazky-a-zmluvy
 dataset.title=EKS - Zakázky a zmluvy
 dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
 	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
