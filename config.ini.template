@@ -1,5 +1,98 @@
 [main]
 ckan_url=http://localhost:5000
 api_key=
-resource_id=
-directory_zakazky=
+directory_root=
+# Setting this to False allows the use of self-signed certificates ...
+# ... BUT IT IS A SECURITY RISK.
+# (reference: http://docs.python-requests.org/en/master/user/advanced/?highlight=ssl#ssl-cert-verification)
+#ssl_verify=True
+
+[aukcne_ponuky]
+dataset.name=eks-aukcne-ponuky
+dataset.title=EKS - Aukčné ponuky
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
+
+[kontraktacne_ponuky]
+dataset.name=eks-kontraktacne-ponuky
+dataset.title=EKS - Kontraktačné ponuky
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
+
+[opisne_formulare]
+dataset.name=eks-opisne-formulare
+dataset.title=EKS - Opisné formuláre
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
+
+[referencie]
+dataset.name=eks-referencie
+dataset.title=EKS - Referencie
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
+
+[zakazky]
+dataset.name=eks-zakazky
+dataset.title=EKS - Zakázky
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
+
+[zmluvy]
+dataset.name=eks-zmluvy-alpha1
+dataset.title=EKS - Zmluvy (beta)
+dataset.notes=Data obtained with https://github.com/OpenDataSk/eks-od-harvestrer and
+	loaded into CKAN with https://github.com/OpenDataSk/eks-od-datastore-pusher .
+	This is a beta for now, thus:
+
+	- it may contain bogus data
+	- data may vanish without warning
+	- BEWARE OF DRAGONS
+dataset.owner=
+resource.id=
+resource.name=API
+resource.notes=Set of multiple CSVs merged together into one complete resource.
