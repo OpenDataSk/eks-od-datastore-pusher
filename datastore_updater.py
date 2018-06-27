@@ -103,7 +103,7 @@ class EksBaseDatastoreUpdater:
             exit('You need to add the path to root directory with EKS files ' +
                  'to your configuration file.')
 
-        # items from subsections, for a specific EKS dataser
+        # items from subsections, for a specific EKS dataset
         if not config.has_section(self.CONFIG_SECTION):
             exit('Please add the {0} section into the config.ini file'
                  .format(self.CONFIG_SECTION))
