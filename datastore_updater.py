@@ -54,7 +54,7 @@ USAGE = '''
 
 '''
 
-BATCH_SIZE = 1000
+BATCH_SIZE = 10000
 STATE_FILE = 'datastore_updater.state'
 
 # state keys
@@ -85,7 +85,6 @@ class EksBaseDatastoreUpdater:
 
     def __init__(self):
         self.state = {}
-        self.load_state()
 
         # items from main section, common to all EKS datasets
         config = configparser.SafeConfigParser()
@@ -104,7 +103,7 @@ class EksBaseDatastoreUpdater:
             exit('You need to add the path to root directory with EKS files ' +
                  'to your configuration file.')
 
-        # items from subsections, for a specific EKS datasert
+        # items from subsections, for a specific EKS dataset
         if not config.has_section(self.CONFIG_SECTION):
             exit('Please add the {0} section into the config.ini file'
                  .format(self.CONFIG_SECTION))
@@ -129,11 +128,13 @@ class EksBaseDatastoreUpdater:
 
         state_file = open(STATE_FILE, "rb");
         self.state = pickle.load(state_file);
+        state_file.close()
 
 
     def save_state(self):
         state_file = open(STATE_FILE, "wb");
         pickle.dump(self.state, state_file);
+        state_file.close()
 
 
     def exit(self, msg=USAGE):
@@ -446,6 +447,7 @@ resource_id={1}
         """Basic update operation called from command line."""
 
         # Load "state" (YYYY-M of last processed file); if not then
+        self.load_state()
         month_to_process = None
         state_key = STATE_LAST_PROCESSED + self.CONFIG_SECTION
         if state_key in self.state:
