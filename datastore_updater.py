@@ -85,7 +85,6 @@ class EksBaseDatastoreUpdater:
 
     def __init__(self):
         self.state = {}
-        self.load_state()
 
         # items from main section, common to all EKS datasets
         config = configparser.SafeConfigParser()
@@ -129,11 +128,13 @@ class EksBaseDatastoreUpdater:
 
         state_file = open(STATE_FILE, "rb");
         self.state = pickle.load(state_file);
+        state_file.close()
 
 
     def save_state(self):
         state_file = open(STATE_FILE, "wb");
         pickle.dump(self.state, state_file);
+        state_file.close()
 
 
     def exit(self, msg=USAGE):
@@ -446,6 +447,7 @@ resource_id={1}
         """Basic update operation called from command line."""
 
         # Load "state" (YYYY-M of last processed file); if not then
+        self.load_state()
         month_to_process = None
         state_key = STATE_LAST_PROCESSED + self.CONFIG_SECTION
         if state_key in self.state:
