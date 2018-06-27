@@ -54,7 +54,7 @@ USAGE = '''
 
 '''
 
-BATCH_SIZE = 1000
+BATCH_SIZE = 10000
 STATE_FILE = 'datastore_updater.state'
 
 # state keys
