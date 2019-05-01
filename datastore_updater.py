@@ -1298,8 +1298,10 @@ class ZakazkyAZmluvy(EksBaseDatastoreUpdater):
         return result
 
 
-class Zmluvy(EksBaseDatastoreUpdater):
-    """Specifics for EKS Zmluvy"""
+class ZmluvyOld(EksBaseDatastoreUpdater):
+    """Specifics for EKS Zmluvy
+
+    Old version of class valid for up to 2019-9."""
 
     CONFIG_SECTION = 'zmluvy'
     DIRECTORY_SUBDIR = 'zmluvy'
@@ -1417,6 +1419,150 @@ class Zmluvy(EksBaseDatastoreUpdater):
     FLOAT_ITEM_NAMES = ['MnozstvoHodnota', 'CenaBezDPH', 'CenaSadzbaDPH',
         'CenaVrataneDPH', 'Uspora']
     INT_ITEM_NAMES = []
+
+
+class Zmluvy(EksBaseDatastoreUpdater):
+    """Specifics for EKS Zmluvy"""
+
+    CONFIG_SECTION = 'zmluvy'
+    DIRECTORY_SUBDIR = 'zmluvy'
+    CSV_FN_PATTERN = 'ZoznamZmluvReport_%Y-%m_.csv'
+    CSV_FN_PATTERN_2 = 'ZoznamZmluvReport_%s_.csv'
+
+    PRIMARY_KEYS = ['IdentifikatorZakazky']
+    STRUCTURE = [
+        {'id': 'IdentifikatorZakazky',
+            'type': 'text',
+            'csvindex': 0},
+        {'id': 'IdentifikatorZmluvy',
+            'type': 'text',
+            'csvindex': 1},
+        {'id': 'ObjednavatelObchodneMeno',
+            'type': 'text',
+            'csvindex': 2},
+        {'id': 'ObjednavatelICO',
+            'type': 'text',
+            'csvindex': 3},
+        {'id': 'ObjednavatelStat',
+            'type': 'text',
+            'csvindex': 4},
+        {'id': 'ObjednavatelObec',
+            'type': 'text',
+            'csvindex': 5},
+        {'id': 'ObjednavatelPSC',
+            'type': 'text',
+            'csvindex': 6},
+        {'id': 'ObjednavatelUlica',
+            'type': 'text',
+            'csvindex': 7},
+        {'id': 'DodavatelObchodneMeno',
+            'type': 'text',
+            'csvindex': 8},
+        {'id': 'DodavatelICO',
+            'type': 'text',
+            'csvindex': 9},
+        {'id': 'DodavatelStat',
+            'type': 'text',
+            'csvindex': 10},
+        {'id': 'DodavatelObec',
+            'type': 'text',
+            'csvindex': 11},
+        {'id': 'DodavatelPSC',
+            'type': 'text',
+            'csvindex': 12},
+        {'id': 'DodavatelUlica',
+            'type': 'text',
+            'csvindex': 13},
+        {'id': 'ZmluvnyVztah',
+            'type': 'text',
+            'csvindex': 14},
+        {'id': 'OpisnyFormularNazov',
+            'type': 'text',
+            'csvindex': 15},
+        {'id': 'OpisnyFormularCpv',
+            'type': 'text',
+            'csvindex': 16},
+        {'id': 'OpisnyFormularDruh',
+            'type': 'text',
+            'csvindex': 17},
+        {'id': 'OpisnyFormularKategoriaSluzieb',
+            'type': 'text',
+            'csvindex': 18},
+        {'id': 'MiestoPlneniaStat',
+            'type': 'text',
+            'csvindex': 19},
+        {'id': 'MiestoPlneniaKraj',
+            'type': 'text',
+            'csvindex': 20},
+        {'id': 'MiestoPlneniaOkres',
+            'type': 'text',
+            'csvindex': 21},
+        {'id': 'MiestoPlneniaObec',
+            'type': 'text',
+            'csvindex': 22},
+        {'id': 'MiestoPlneniaUlica',
+            'type': 'text',
+            'csvindex': 23},
+        {'id': 'LehotaPlneniaOd',
+            'type': 'timestamp',
+            'csvindex': 24},
+        {'id': 'LehotaPlneniaDo',
+            'type': 'timestamp',
+            'csvindex': 25},
+        {'id': 'LehotaPlneniaPresne',
+            'type': 'timestamp',
+            'csvindex': 26},
+        {'id': 'MnozstvoJednotka',
+            'type': 'text',
+            'csvindex': 27},
+        {'id': 'MnozstvoHodnota',
+            'type': 'float',
+            'csvindex': 28},
+        {'id': 'CenaBezDPH',
+            'type': 'float',
+            'csvindex': 29},
+        {'id': 'CenaSadzbaDPH',
+            'type': 'float',
+            'csvindex': 30},
+        {'id': 'CenaVrataneDPH',
+            'type': 'float',
+            'csvindex': 31},
+        {'id': 'Uspora',
+            'type': 'float',
+            'csvindex': 32},
+        {'id': 'DatumZazmluvnenia',
+            'type': 'timestamp',
+            'csvindex': 33},
+        {'id': 'IdStavVCrz',
+            'type': 'integer',
+            'csvindex': 34},
+    ]
+
+    DATE_ITEM_NAMES = ['LehotaPlneniaOd', 'LehotaPlneniaDo', 'LehotaPlneniaPresne',
+        'DatumZazmluvnenia']
+    FLOAT_ITEM_NAMES = ['MnozstvoHodnota', 'CenaBezDPH', 'CenaSadzbaDPH',
+        'CenaVrataneDPH', 'Uspora']
+    INT_ITEM_NAMES = ['IdStavVCrz']
+
+
+    def update_month(self, csvdate):
+        """Overidden to handle transition from old (up to 2018-9) to new structure
+        (2018-10 and after). Quite ugly.
+
+        If we no longer need backward compatibility, simply remove this method."""
+
+        update_date = datetime.datetime.strptime(csvdate, '%Y-%m')
+        cutoff_date = datetime.datetime(2018, 10, 1)
+        result = None
+        if cutoff_date <= update_date:
+            # new structure => process withy this class
+            result = super().update_month(csvdate)
+        else:
+            # old structure => use old version of this class
+            old = ZmluvyOld()
+            result = old.update_month(csvdate)
+
+        return result
 
 
 def help():
